@@ -13,9 +13,42 @@ struct PatientRecord {
     int age;
     std::string condition;
 
-    // Constructor for convenience
+    // Default constructor
+    PatientRecord() : id(0), name(""), age(0), condition("") {}
+
+    // Parameterized constructor
     PatientRecord(int id, std::string name, int age, std::string condition)
         : id(id), name(name), age(age), condition(condition) {}
+
+    // Copy constructor
+    PatientRecord(const PatientRecord& other)
+        : id(other.id), name(other.name), age(other.age), condition(other.condition) {}
+
+    // Move constructor
+    PatientRecord(PatientRecord&& other) noexcept
+        : id(other.id), name(std::move(other.name)), age(other.age), condition(std::move(other.condition)) {}
+
+    // Copy assignment operator
+    PatientRecord& operator=(const PatientRecord& other) {
+        if (this != &other) {
+            id = other.id;
+            name = other.name;
+            age = other.age;
+            condition = other.condition;
+        }
+        return *this;
+    }
+
+    // Move assignment operator
+    PatientRecord& operator=(PatientRecord&& other) noexcept {
+        if (this != &other) {
+            id = other.id;
+            name = std::move(other.name);
+            age = other.age;
+            condition = std::move(other.condition);
+        }
+        return *this;
+    }
 };
 
 // Hash table for quick access by ID
@@ -131,34 +164,75 @@ void updateRecord(int id, const std::string& name, int age, const std::string& c
 }
 
 int main() {
-    // Adding some records
-    addRecord(1, "Alice", 30, "Flu");
-    addRecord(2, "Bob", 25, "Cold");
-    addRecord(3, "Charlie", 35, "Asthma");
+    int choice;
+    do {
+        std::cout << "\nPatient Record Database\n";
+        std::cout << "1. Add Record\n";
+        std::cout << "2. Retrieve Record by ID\n";
+        std::cout << "3. Retrieve All Records Sorted by Age\n";
+        std::cout << "4. Update Record\n";
+        std::cout << "5. Delete Record\n";
+        std::cout << "6. Exit\n";
+        std::cout << "Enter your choice: ";
+        std::cin >> choice;
 
-    // Retrieve records by ID
-    std::cout << "\nRetrieving record with ID 2:\n";
-    retrieveRecordByID(2);
-
-    // Retrieve all records sorted by age
-    std::cout << "\nRetrieving all records sorted by age:\n";
-    retrieveRecordsSortedByAge();
-
-    // Update a record
-    std::cout << "\nUpdating record with ID 2:\n";
-    updateRecord(2, "Bob", 26, "Recovered from Cold");
-
-    // Retrieve all records after update
-    std::cout << "\nRetrieving all records sorted by age after update:\n";
-    retrieveRecordsSortedByAge();
-
-    // Delete a record
-    std::cout << "\nDeleting record with ID 1:\n";
-    deleteRecord(1);
-
-    // Retrieve all records after deletion
-    std::cout << "\nRetrieving all records sorted by age after deletion:\n";
-    retrieveRecordsSortedByAge();
+        switch (choice) {
+            case 1: {
+                int id, age;
+                std::string name, condition;
+                std::cout << "Enter ID: ";
+                std::cin >> id;
+                std::cin.ignore(); // Clear the newline character from input buffer
+                std::cout << "Enter Name: ";
+                std::getline(std::cin, name);
+                std::cout << "Enter Age: ";
+                std::cin >> age;
+                std::cin.ignore(); // Clear the newline character from input buffer
+                std::cout << "Enter Condition: ";
+                std::getline(std::cin, condition);
+                addRecord(id, name, age, condition);
+                break;
+            }
+            case 2: {
+                int id;
+                std::cout << "Enter ID: ";
+                std::cin >> id;
+                retrieveRecordByID(id);
+                break;
+            }
+            case 3:
+                retrieveRecordsSortedByAge();
+                break;
+            case 4: {
+                int id, age;
+                std::string name, condition;
+                std::cout << "Enter ID: ";
+                std::cin >> id;
+                std::cin.ignore(); // Clear the newline character from input buffer
+                std::cout << "Enter New Name: ";
+                std::getline(std::cin, name);
+                std::cout << "Enter New Age: ";
+                std::cin >> age;
+                std::cin.ignore(); // Clear the newline character from input buffer
+                std::cout << "Enter New Condition: ";
+                std::getline(std::cin, condition);
+                updateRecord(id, name, age, condition);
+                break;
+            }
+            case 5: {
+                int id;
+                std::cout << "Enter ID: ";
+                std::cin >> id;
+                deleteRecord(id);
+                break;
+            }
+            case 6:
+                std::cout << "Exiting...\n";
+                break;
+            default:
+                std::cout << "Invalid choice. Please try again.\n";
+        }
+    } while (choice != 6);
 
     return 0;
 }
